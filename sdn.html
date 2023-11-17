@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDN Management System</title>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f8f8;
+            overflow: hidden;
+        }
+
+        #header {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 10px;
+            text-align: center;
+        }
+
+        #container {
+            display: grid;
+            grid-template-rows: 1fr;
+            grid-template-columns: 200px 1fr;
+            grid-template-areas: "sidebar content";
+            height: 100vh;
+        }
+
+        #sidebar {
+            grid-area: sidebar;
+            background-color: #34495e;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #content {
+            grid-area: content;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+            background: #ecf0f1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-link {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid transparent;
+            transition: border-bottom 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            border-bottom: 2px solid #ecf0f1;
+            background-color: #2c3e50;
+            color: #fff;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100%;
+            border: none;
+            resize: none;
+            outline: none;
+            background-color: #ecf0f1;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .content-area {
+            display: none;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #topologyContent {
+            background-color: transparent;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #createTopologyBtn {
+            background-color: #fff; /* 设置背景颜色为白色 */
+            color: #27ae60; /* 设置文字颜色为绿色 */
+            padding: 10px;
+            border: 2px solid #27ae60; /* 设置边框颜色为绿色 */
+            border-radius: 50%; /* 将边框半径设置为50%，实现圆形按钮 */
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #createTopologyBtn:hover {
+            background-color: #27ae60;
+            color: #fff;
+        }
+
+        #topologyImageContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 80%;
+            width: 80%;
+            justify-content: center;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            margin-top: -30px;
+            overflow: hidden;
+        }
+
+        #topologyImage {
+            display: none;
+            overflow: hidden;
+            width: 98%;
+            height: 98%;
+            border-radius: 5px;
+        }
+
+        #topology {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            justify-content: center;
+            border-width: 0; /* 将 border-width 设置为0 */
+            border-radius: 5px;
+            margin-top: -30px;
+            overflow: hidden;
+        }
+
+        /*#control {*/
+        /*    padding: 100px;*/
+        /*    width: 500px;*/
+        /*    position: absolute;*/
+        /*    align-content: center;*/
+        /*}*/
+
+
+        .toggle-switch {
+            width: 40px;
+            height: 20px;
+            background-color: #ccc;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            /*display: flex;*/
+            /*align-items: center;*/
+            margin-top: 10px;
+        }
+
+        .slider {
+
+            width: 18px;
+            height: 18px;
+            background-color: #27ae60;
+            border-radius: 50%;
+            position: absolute;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-switch.active .slider {
+            transform: translateX(22px);
+            background-color: #e74c3c;
+        }
+
+        #packetContent {
+            display: none;
+            margin-bottom: 100px;
+            width: 80%;
+            height: 80vh;
+            flex-direction: column;
+            align-items: center;
+            align-content: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #statisticsContent {
+            display: none;
+            margin-bottom: 100px;
+            width: 80%;
+            height: 80vh;
+            flex-direction: column;
+            align-items: center;
+            align-content: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #analysisContent {
+            display: none;
+            margin-bottom: 100px;
+            width: 80%;
+            height: 80vh;
+            flex-direction: column;
+            align-items: center;
+            align-content: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #control {
+            display: none;
+            position: relative;
+            align-self: center;
+            padding-left: 40%;
+            margin-bottom: 5px;
+        }
+
+        #statisticsDown {
+            display: none;
+            position: relative;
+            align-self: center;
+            padding-left: 40%;
+            margin-bottom: 5px;
+        }
+
+        #packetInfo {
+            font-family: 'Courier New', Courier, monospace; /* 使用等宽字体，模仿终端效果 */
+            font-size: 18px; /* 设置字体大小 */
+            font-weight: bold;
+            background-color: #FDF6E3; /* 设置背景色为米白色 */
+            color: #014fa4; /* 设置文本颜色为蓝色 */
+            width: 100%; /* 让文本框宽度铺满父容器 */
+            height: 95%; /* 设置文本框高度，可以根据需要调整 */
+            border: none; /* 去除边框 */
+            resize: none; /* 不允许用户调整大小 */
+            outline: none; /* 去除默认的外边框 */
+            padding: 10px; /* 设置内边距 */
+            box-sizing: border-box; /* 盒模型设置为border-box，保证宽度和内边距的值包含在width内 */
+            overflow-y: auto; /* 如果文本内容超出高度，显示滚动条 */
+        }
+
+        #statisticsTxt {
+            font-family: 'Courier New', Courier, monospace; /* 使用等宽字体，模仿终端效果 */
+            font-size: 18px; /* 设置字体大小 */
+            font-weight: bold;
+            background-color: #FDF6E3; /* 设置背景色为米白色 */
+            color: #014fa4; /* 设置文本颜色为蓝色 */
+            width: 100%; /* 让文本框宽度铺满父容器 */
+            height: 88%; /* 设置文本框高度，可以根据需要调整 */
+            border: none; /* 去除边框 */
+            resize: none; /* 不允许用户调整大小 */
+            outline: none; /* 去除默认的外边框 */
+            padding: 10px; /* 设置内边距 */
+            box-sizing: border-box; /* 盒模型设置为border-box，保证宽度和内边距的值包含在width内 */
+            overflow-y: auto; /* 如果文本内容超出高度，显示滚动条 */
+        }
+
+        #kTxt {
+            font-family: 'Courier New', Courier, monospace; /* 使用等宽字体，模仿终端效果 */
+            font-size: 18px; /* 设置字体大小 */
+            font-weight: bold;
+            background-color: #FDF6E3; /* 设置背景色为米白色 */
+            color: #014fa4; /* 设置文本颜色为蓝色 */
+            width: 100%; /* 让文本框宽度铺满父容器 */
+            height: 77%; /* 设置文本框高度，可以根据需要调整 */
+            border: none; /* 去除边框 */
+            resize: none; /* 不允许用户调整大小 */
+            outline: none; /* 去除默认的外边框 */
+            padding: 10px; /* 设置内边距 */
+            box-sizing: border-box; /* 盒模型设置为border-box，保证宽度和内边距的值包含在width内 */
+            overflow-y: auto; /* 如果文本内容超出高度，显示滚动条 */
+        }
+
+        .clear-button {
+            background-color: #e74c3c;
+            align-items: center; /* 垂直居中 */
+        !important;
+            color: #fff;
+            border: none;
+            font-size: large;
+            padding: 8px;
+            margin-left: 70px;
+            margin-top: 6px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .clear-button:hover {
+            background-color: #c0392b;
+        }
+
+        .clear-button i {
+            margin-right: 5px;
+        }
+
+        .section-label {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50; /* 你想要的颜色 */
+            margin-bottom: 10px;
+        }
+
+        #kValue {
+            width: 113px; /* 调整输入框的宽度 */
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-top: auto;
+            margin-left: 427px; /* 向右移动输入框 */
+        }
+
+        #kValue:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.7);
+        }
+
+        #sendRequestBtn {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 130px;
+            margin-top: 1px;
+            margin-left: 5px; /* 添加这行来调整按钮和数字输入框的水平间距 */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        #sendRequestBtn:hover {
+            background-color: #2980b9;
+        }
+
+
+    </style>
+</head>
+<body>
+<div id="header">
+    <h1>SDN 管理系统</h1>
+</div>
+
+<div id="container">
+    <div id="sidebar">
+        <a href="#" class="nav-link" onclick="showContent('topologyContent')"><i class="fa fa-cubes"
+                                                                                 aria-hidden="true"></i> 创建拓扑</a>
+        <a href="#" class="nav-link" onclick="showContent('packetContent')"><i class="fa fa-rocket"
+                                                                               aria-hidden="true"></i> 数据包构造</a>
+        <a href="#" class="nav-link" onclick="showContent('statisticsContent')"><i class="fa fa-bar-chart"
+                                                                                   aria-hidden="true"></i> 流量统计</a>
+        <a href="#" class="nav-link" onclick="showContent('analysisContent')"><i class="fa fa-search"
+                                                                                 aria-hidden="true"></i> 流量分析</a>
+    </div>
+    <div id="content">
+        <div id="topologyContent" class="content-area">
+            <!-- Content for Topology -->
+            <div id="topology">
+                <div id="topologyImageContainer">
+                    <img id="topologyImage" src="topo.jpg" alt="topology.jpg">
+                </div>
+                <button id="createTopologyBtn" onclick="createTopology()">创建拓扑</button>
+            </div>
+        </div>
+        <div id="packetContent" class="content-area">
+            <!-- 数据包构造的内容 -->
+            <label for="packetInfo"></label>
+            <textarea id="packetInfo" readonly></textarea>
+            <div id="control">
+                <label for="toggleSwitch">构造数据包:</label>
+                <div class="toggle-switch" onclick="toggleSwitch()" id="toggleSwitch">
+                    <div class="slider"></div>
+                </div>
+                <!-- 清除按钮 -->
+                <button class="clear-button" onclick="clearScreen()">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </div>
+        </div>
+
+
+        <div id="analysisContent" class="content-area">
+            <label class="section-label" for="kTxt">topK</label>
+            <textarea id="kTxt" readonly></textarea>
+
+            <!-- Content for Traffic Analysis -->
+            <label for="kValue">Enter k for Top K Analysis:</label>
+            <input type="number" id="kValue" min="1" value="1" step="1">
+
+            <!-- Button for Sending Request -->
+            <button id="sendRequestBtn" onclick="sendTopKRequest()"><i class="fa fa-paper-plane" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <div id="statisticsContent" class="content-area">
+            <label class="section-label" for="statisticsTxt">流量情况</label>
+            <textarea id="statisticsTxt" readonly></textarea>
+            <div id="statisticsDown">
+                <!-- 清除按钮 -->
+                <button class="clear-button" onclick="clearStatics()">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function sendTopKRequest() {
+        // 获取输入框的值
+        let kValue = document.getElementById('kTxt');
+        kValue.value = ""
+
+        let k = document.getElementById("kValue").value
+
+        const url = `http://localhost:8080/trafficAnalysis?k=${k}`
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json'
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 200) {
+                    const trafficList = data.trafficList
+                    console.log(data)
+                    let traffic = ""
+                    // 遍历trafficList数组
+                    trafficList.forEach(item => {
+                            // 访问每个元素的属性
+                            const sourceIp = item.sourceIp;
+                            const dstIp = item.dstIp;
+                            const sourcePort = item.sourcePort;
+                            const dstPort = item.dstPort;
+                            const occur = item.occur;
+                            const type = item.type;
+                            traffic = `源IP地址：${sourceIp} 目标IP地址：${dstIp} 源端口：${sourcePort} 目标端口：${dstPort} 协议：${type} 出现次数:${occur}`
+                            kValue.value += traffic + '\n'
+                            console.log("str:" + traffic)
+                        }
+                    )
+
+                    console.log('Success:', data.msg);
+                } else {
+                    console.error('Error:', data.msg);
+                    window.alert('Error: ' + data.msg);
+                }
+            })
+            .catch(error => {
+                console.error("An error occurred while gen packet" + error);
+            })
+    }
+
+
+    // 获取文本框元素
+    const autoUpdateText = document.getElementById('statisticsTxt');
+    // 每隔一定时间执行一次函数
+    let intervalId = setInterval(updateStatisticTxt, 1000); // 5000毫秒，即5秒
+
+    function updateStatisticTxt() {
+        let traffic = ""
+        fetch("http://localhost:8080/trafficStatics", {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json'
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 200) {
+                    traffic = `源IP地址：${data.sourceIp} 目标IP地址：${data.dstIp} 源端口：${data.sourcePort} 目标端口：${data.dstPort} 协议：${data.type} 出现次数:${data.occur} Count-Min正确率: ${data.countMin} 准确率:${data.precision}% 召回率:${data.recall}% f1-score:${data.fScore}%`
+                    console.log('Success:', data.msg);
+                    document.getElementById("statisticsTxt").value += traffic + '\n' + '\n'
+                } else {
+                    console.error('Error:', data.msg);
+                    window.alert('Error: ' + data.msg);
+                }
+            })
+            .catch(error => {
+                console.error("An error occurred while gen packet" + error);
+            })
+    }
+
+    function clearStatics() {
+        var statisticsTxt = document.getElementById("statisticsTxt")
+        statisticsTxt.value = "";
+    }
+
+    // 清屏开关按钮的点击事件处理函数
+    function clearScreen() {
+        // 获取文本框元素
+        var packetInfoTextarea = document.getElementById('packetInfo');
+        // 清空文本框内容
+        packetInfoTextarea.value = '';
+    }
+
+    function toggleSwitch() {
+        const toggleSwitch = document.getElementById('toggleSwitch');
+        const isActive = toggleSwitch.classList.toggle('active');
+
+        const packetInfo = document.getElementById("packetInfo")
+        // 根据按钮的状态启动或停止定时器
+        if (isActive) {
+            intervalId = setInterval(packetGen, 1000); // 每秒发送一次请求
+        } else {
+            clearInterval(intervalId); // 停止定时器
+        }
+    }
+
+
+    function packetGen() {
+        const packetInfo = document.getElementById("packetInfo")
+        let packet = "";
+        fetch("http://localhost:8080/packetGen", {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 200) {
+                    packet = `源IP地址: ${data.sourceIp} 目标IP地址：${data.dstIp} 源端口：${data.sourcePort} 目标端口：${data.dstPort} 协议：${data.type}\n`;
+                    packetInfo.value += packet;
+                    // 滚动到文本框底部
+                    packetInfo.scrollTop = packetInfo.scrollHeight;
+                    console.log(packet)
+                } else {
+                    console.error('Error:', data.msg);
+                    window.alert('Error: ' + data.msg);
+                }
+            })
+            .catch(error => {
+                console.error("An error occurred while gen packet" + error);
+            })
+    }
+
+    function showContent(contentId) {
+        // Hide all content areas
+        document.querySelectorAll('.content-area').forEach(function (content) {
+            content.classList.remove('active');
+            content.style.display = 'none';  // Add this line to hide all content areas
+        });
+
+        // Show the selected content area
+        document.getElementById(contentId).classList.add('active');
+        document.getElementById(contentId).style.display = 'block';  // Add this line to show the selected content area
+
+        // If the selected content area is Topology, show the image container
+        if (contentId === 'topologyContent') {
+            document.getElementById('topology').style.display = 'flex';
+        } else {
+            // If it's not Topology, hide the image container
+            document.getElementById('topology').style.display = 'none';
+            document.getElementById("topologyImage").style.display = "none";
+        }
+
+        if (contentId === "packetContent") {
+            document.getElementById("packetInfo").style.display = "flex";
+            document.getElementById("control").style.display = "flex";
+        } else {
+            document.getElementById("packetInfo").style.display = "none";
+            document.getElementById("control").style.display = "none";
+        }
+
+        if (contentId === "statisticsContent") {
+            document.getElementById("statisticsTxt").style.display = "flex";
+            document.getElementById("statisticsDown").style.display = "flex";
+
+            document.getElementById("statisticsTxt").value += ""
+        } else {
+            document.getElementById("statisticsTxt").style.display = "none";
+            document.getElementById("statisticsDown").style.display = "none";
+        }
+
+        if (contentId === "analysisContent") {
+            //    document.getElementById("kTxt").style.display = "flex";
+            document.getElementById("kValue").style.display = "flex"
+        } else {
+            //   document.getElementById("kTxt").style.display = "none";
+            document.getElementById("kValue").style.display = "none"
+        }
+    }
+
+    function createTopology() {
+        fetch("http://localhost:8080/makeTopology", {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json'
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 200) {
+                    document.getElementById("topologyImage").style.display = "flex";
+                    console.log('Success:', data.msg);
+                } else {
+                    console.error('Error:', data.msg);
+                    window.alert('Error: ' + data.msg);
+                }
+            })
+            .catch(error => {
+                console.error("An error occurred while making topology" + error);
+            })
+    }
+
+
+</script>
+</body>
+</html>
