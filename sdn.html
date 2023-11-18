@@ -432,7 +432,7 @@
 
         let k = document.getElementById("kValue").value
 
-        const url = `http://localhost:8080/trafficAnalysis?k=${k}`
+        const url = `http://localhost:6688/trafficAnalysis?k=${k}`
         fetch(url, {
             method: 'GET',
             headers: {
@@ -479,7 +479,7 @@
 
     function updateStatisticTxt() {
         let traffic = ""
-        fetch("http://localhost:8080/trafficStatics", {
+        fetch("http://localhost:6688/trafficStatics", {
             method: 'GET',
             headers: {
                 'Content-type': 'application/json'
@@ -531,7 +531,7 @@
     function packetGen() {
         const packetInfo = document.getElementById("packetInfo")
         let packet = "";
-        fetch("http://localhost:8080/packetGen", {
+        fetch("http://localhost:6688/packetGen", {
             method: 'POST',
             headers: {
                 'Content-type': 'application/json'
@@ -603,7 +603,7 @@
     }
 
     function createTopology() {
-        fetch("http://localhost:8080/makeTopology", {
+        fetch("http://localhost:6688/makeTopology", {
             method: 'GET',
             headers: {
                 'Content-type': 'application/json'
